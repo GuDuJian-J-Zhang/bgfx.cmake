@@ -3,7 +3,7 @@
 	url = https://github.com/bkaradzic/bx.git
 [submodule "bgfx"]
 	path = bgfx
-	url = git@github.com:GuDuJian-J-Zhang/bgfx.git
+	url = git-personal:GuDuJian-J-Zhang/bgfx.git
 [submodule "bimg"]
 	path = bimg
 	url = https://github.com/bkaradzic/bimg.git
