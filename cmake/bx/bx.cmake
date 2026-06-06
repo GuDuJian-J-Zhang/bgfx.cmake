@@ -90,9 +90,15 @@ target_compile_definitions(bx PUBLIC "__STDC_LIMIT_MACROS")
 target_compile_definitions(bx PUBLIC "__STDC_FORMAT_MACROS")
 target_compile_definitions(bx PUBLIC "__STDC_CONSTANT_MACROS")
 
-target_compile_features(bx PUBLIC cxx_std_14)
+target_compile_features(bx PUBLIC cxx_std_17)
 # (note: see bx\scripts\toolchain.lua for equivalent compiler flag)
-target_compile_options(bx PUBLIC $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus /Zc:preprocessor>)
+if(MSVC)
+	target_compile_definitions(bx PUBLIC BX_CONFIG_MSVC_NO_CONSTEXPR_FUNC=1)
+	target_compile_options(bx PUBLIC /Zc:__cplusplus)
+	if(MSVC_VERSION GREATER_EQUAL 1925)
+		target_compile_options(bx PUBLIC /Zc:preprocessor)
+	endif()
+endif()
 
 # Link against psapi on Windows
 if(WIN32)

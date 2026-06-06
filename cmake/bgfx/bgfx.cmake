@@ -19,11 +19,7 @@ if(NOT IS_DIRECTORY ${BGFX_DIR})
 	return()
 endif()
 
-if(NOT APPLE)
-	set(BGFX_AMALGAMATED_SOURCE ${BGFX_DIR}/src/amalgamated.cpp)
-else()
-	set(BGFX_AMALGAMATED_SOURCE ${BGFX_DIR}/src/amalgamated.mm)
-endif()
+set(BGFX_AMALGAMATED_SOURCE ${BGFX_DIR}/src/amalgamated.cpp)
 
 # Grab the bgfx source files
 file(
@@ -38,6 +34,11 @@ file(
 if(BGFX_AMALGAMATED)
 	set(BGFX_NOBUILD ${BGFX_SOURCES})
 	list(REMOVE_ITEM BGFX_NOBUILD ${BGFX_AMALGAMATED_SOURCE})
+	# glcontext_cgl.mm contains Obj-C and cannot be included in amalgamated.cpp;
+	# compile it separately on Apple even in amalgamated mode.
+	if(APPLE)
+		list(REMOVE_ITEM BGFX_NOBUILD ${BGFX_DIR}/src/glcontext_cgl.mm)
+	endif()
 	foreach(BGFX_SRC ${BGFX_NOBUILD})
 		set_source_files_properties(${BGFX_SRC} PROPERTIES HEADER_FILE_ONLY ON)
 	endforeach()
@@ -194,8 +195,9 @@ endif()
 if(NOT APPLE)
 	set_source_files_properties(${BGFX_DIR}/src/glcontext_eagl.mm PROPERTIES HEADER_FILE_ONLY ON)
 	set_source_files_properties(${BGFX_DIR}/src/glcontext_nsgl.mm PROPERTIES HEADER_FILE_ONLY ON)
-	set_source_files_properties(${BGFX_DIR}/src/renderer_mtl.mm PROPERTIES HEADER_FILE_ONLY ON)
+	set_source_files_properties(${BGFX_DIR}/src/glcontext_cgl.mm PROPERTIES HEADER_FILE_ONLY ON)
 endif()
+# renderer_mtl.mm was replaced by renderer_mtl.cpp (metal-cpp) and no longer exists
 
 # Exclude glx context on non-unix
 if(NOT UNIX OR APPLE)
